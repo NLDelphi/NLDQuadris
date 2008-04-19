@@ -4,7 +4,15 @@
 {                                                                             }
 { aka "NLDEasterEgg"                                                          }
 {                                                                             }
-{ V1.0.0.0  -  2008  -  by Albert de Weerd (aka NGLN)                         }
+{ Initiator: Albert de Weerd (aka NGLN)                                       }
+{ License: Free to use, free to modify                                        }
+{ Website: http://www.nldelphi.com/forum/showthread.php?t=31097               }
+{ SVN repository: http://svn.nldelphi.com/nldelphi/opensource/ngln/NLDQuadris }
+{                                                                             }
+{ *************************************************************************** }
+{                                                                             }
+{ Date:  April 19, 2008                                                       }
+{ Version:  1.0.0.1                                                           }
 {                                                                             }
 { *************************************************************************** }
 
@@ -261,8 +269,6 @@ type
     FThemeColor: TColor;
     FUpdateTimer: TTimer;
     FView: TItemsView;
-    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
-    procedure CMVisibleChanged(var Message: TMessage); message CM_VISIBLECHANGED;
     procedure GameOver;
     function GetColor: TColor;
     function GetRunning: Boolean;
@@ -284,6 +290,8 @@ type
     procedure SetRunning(const Value: Boolean);
     procedure SetTheme(const Value: TThemeName);
     procedure UpdateLevel;
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure CMVisibleChanged(var Message: TMessage); message CM_VISIBLECHANGED;
     procedure WMGetDlgCode(var Message: TMessage); message WM_GETDLGCODE;
     procedure WMKeyDown(var Message: TWMKeyDown); message WM_KEYDOWN;
     procedure WMKillFocus(var Message: TWMSetFocus); message WM_KILLFOCUS;
@@ -658,31 +666,31 @@ end;
 { TQuadrisItems }
 {                                 Start
                                     |
-                                 NextPair <-------------.
-                                    |                   |
-                Stop <-- Ja <-- GameOver?               |
-                                    |                   |
-                          ,------> Nee                  |
-                          |         |                   |
-                         Nee   Move&Rotate              |
-                          |         |                   |
-                          `---- Finished?               |
-                                    |                   |
-                                   Ja                   |
-                                    |                   |
-                                  Drop                  |
-                                    |                   |
-                Stop <-- Ja <-- GameOver?               |
-                                    |                   |
-                                   Nee                  |<------.
-                                    |                   |       |
-                          ,---> Dropping             Dropping   |
-                          |         |                   |       |
-                          |       Trace                Ja      Nee
-                          |         |                   |       |
-                          |      Delete? --> Nee --> Bombs? ----'
+                                 NextPair <------------.
+                                    |                  |
+               Stop <-- Yes <-- GameOver?              |
+                                    |                  |
+                          ,-------> No                 |
+                          |         |                  |
+                          No   Move&Rotate             |
+                          |         |                  |
+                          `---- Finished?              |
+                                    |                  |
+                                   Yes                 |
+                                    |                  |
+                                  Drop                 |
+                                    |                  |
+               Stop <-- Yes <-- GameOver?              |
+                                    |                  |
+                                    No                 |<------.
+                                    |                  |       |
+                          ,---> Dropping            Dropping   |
+                          |         |                  |       |
+                          |       Trace               Yes      No
+                          |         |                  |       |
+                          |      Delete? --> No --> Bombs? ----'
                           |         |
-                          |        Ja
+                          |        Yes
                           |         |
                           |      Points
                           |         |
