@@ -7,12 +7,12 @@
 { Initiator: Albert de Weerd (aka NGLN)                                       }
 { License: Free to use, free to modify                                        }
 { Website: http://www.nldelphi.com/forum/showthread.php?t=31097               }
-{ SVN repository: http://svn.nldelphi.com/nldelphi/opensource/ngln/NLDQuadris }
+{ SVN path: http://svn.nldelphi.com/nldelphi/opensource/ngln/NLDQuadris       }
 {                                                                             }
 { *************************************************************************** }
 {                                                                             }
-{ Date:  April 19, 2008                                                       }
-{ Version:  1.0.0.1                                                           }
+{ Date: April 30, 2008                                                        }
+{ Version: 1.0.0.1                                                            }
 {                                                                             }
 { *************************************************************************** }
 
@@ -70,7 +70,7 @@ type
   end;
 
   TItemMotion = record
-    Speed: Double; //PixelsPerSecond
+    Speed: Double; {PixelsPerSecond}
     StartTick: Cardinal;
     StartTop: Integer;
     FinishTop: Integer;
@@ -479,22 +479,24 @@ const
 procedure TItem.Animate;
 begin
   case FQuadris.FAnimKind of
-    akCycle: begin
-      if FAnimIndex = FImages.Count - 1 then
-        FAnimIndex := 0
-      else
-        Inc(FAnimIndex);
-    end;
-    akPendulum: begin
-      if FAnimIndex = FImages.Count - 1 then
-        FAnimOrder := aoDown
-      else if FAnimIndex = 0 then
-        FAnimOrder := aoUp;
-      if FAnimOrder = aoUp then
-        Inc(FAnimIndex)
-      else
-        Dec(FAnimIndex);
-    end;
+    akCycle:
+      begin
+        if FAnimIndex = FImages.Count - 1 then
+          FAnimIndex := 0
+        else
+          Inc(FAnimIndex);
+      end;
+    akPendulum:
+      begin
+        if FAnimIndex = FImages.Count - 1 then
+          FAnimOrder := aoDown
+        else if FAnimIndex = 0 then
+          FAnimOrder := aoUp;
+        if FAnimOrder = aoUp then
+          Inc(FAnimIndex)
+        else
+          Dec(FAnimIndex);
+      end;
   end;
   if Fading then
     Fade;
@@ -603,7 +605,8 @@ begin
     BitBlt(Canvas.Handle, 0, 0, Width, Height, DC2, 0, 0, SRCPAINT);
     DeleteObject(BITMAP2);
     DeleteDC(DC2);
-  end else begin
+  end else
+  begin
     ImageList_Draw(FImages.Handle, FAnimIndex, DC1, 0, 0, ILD_MASK);
     BitBlt(DC1, 0, 0, Width, Height, FBackground.Handle, Left, Top, SRCAND);
     ImageList_Draw(FImages.Handle, FAnimIndex, DC1, 0, 0, ILD_TRANSPARENT);
@@ -774,23 +777,26 @@ begin
   Coord1.Col := FCurrentPair.Item1.Col;
   Coord2.Col := FCurrentPair.Item2.Col;
   case FCurrentPair.Dir of
-    North: begin
-      Coord1.Row := ColHeight(Coord1.Col);
-      Coord2.Row := Coord1.Row + 1;
-      if Coord1.Row = TopRow then
+    North:
       begin
-        FQuadris.GameOver;
-        Exit;
+        Coord1.Row := ColHeight(Coord1.Col);
+        Coord2.Row := Coord1.Row + 1;
+        if Coord1.Row = TopRow then
+        begin
+          FQuadris.GameOver;
+          Exit;
+        end;
       end;
-    end;
-    East, West: begin
-      Coord1.Row := ColHeight(Coord1.Col);
-      Coord2.Row := ColHeight(Coord2.Col);
-    end;
-    South: begin
-      Coord2.Row := ColHeight(Coord1.Col);
-      Coord1.Row := Coord2.Row + 1;
-    end;
+    East, West:
+      begin
+        Coord1.Row := ColHeight(Coord1.Col);
+        Coord2.Row := ColHeight(Coord2.Col);
+      end;
+    South:
+      begin
+        Coord2.Row := ColHeight(Coord1.Col);
+        Coord1.Row := Coord2.Row + 1;
+      end;
   end;
   SetLength(FToTrace, 2);
   FToTrace[0] := Coord1;
@@ -855,7 +861,8 @@ function TQuadrisItems.MoveLeft: Boolean;
 begin
   if FDropping or FDeleting then
     Result := False
-  else begin
+  else
+  begin
     GridNeeded(False);
     Result := ValidateMovement(West);
     if Result then
@@ -869,14 +876,20 @@ procedure TQuadrisItems.MoveCurrentPair(const ACol: TColRange;
 begin
   FCurrentPair.Dir := ADir;
   case ADir of
-    North, East, West: FCurrentPair.Item1.MoveTo(ACol, ARow, ColHeight(ACol));
-    South: FCurrentPair.Item1.MoveTo(ACol, ARow, ColHeight(ACol) + 1);
+    North, East, West:
+      FCurrentPair.Item1.MoveTo(ACol, ARow, ColHeight(ACol));
+    South:
+      FCurrentPair.Item1.MoveTo(ACol, ARow, ColHeight(ACol) + 1);
   end;
   case ADir of
-    North: FCurrentPair.Item2.MoveTo(ACol, ARow + 1, ColHeight(ACol) + 1);
-    East: FCurrentPair.Item2.MoveTo(ACol + 1, ARow, ColHeight(ACol + 1));
-    South: FCurrentPair.Item2.MoveTo(ACol, ARow - 1, ColHeight(ACol));
-    West: FCurrentPair.Item2.MoveTo(ACol - 1, ARow, ColHeight(ACol - 1));
+    North:
+      FCurrentPair.Item2.MoveTo(ACol, ARow + 1, ColHeight(ACol) + 1);
+    East:
+      FCurrentPair.Item2.MoveTo(ACol + 1, ARow, ColHeight(ACol + 1));
+    South:
+      FCurrentPair.Item2.MoveTo(ACol, ARow - 1, ColHeight(ACol));
+    West:
+      FCurrentPair.Item2.MoveTo(ACol - 1, ARow, ColHeight(ACol - 1));
   end;
 end;
 
@@ -884,7 +897,8 @@ function TQuadrisItems.MoveRight: Boolean;
 begin
   if FDropping or FDeleting then
     Result := False
-  else begin
+  else
+  begin
     GridNeeded(False);
     Result := ValidateMovement(East);
     if Result then
@@ -933,7 +947,8 @@ var
 begin
   if FDropping or FDeleting then
     Result := False
-  else begin
+  else
+  begin
     GridNeeded(False);
     Result := True;
     Col := FCurrentPair.Item1.Col;
@@ -947,7 +962,8 @@ begin
         begin
           IncDir;
           Dec(Col);
-        end else begin
+        end else
+        begin
           IncDir;
           IncDir;
           Inc(Row);
@@ -964,12 +980,13 @@ begin
         begin
           IncDir;
           Inc(Col);
-        end else begin
+        end else
+        begin
           IncDir;
           IncDir;
           Dec(Row);
         end;
-      else {West:}
+      West:
         IncDir;
     end;
     if Result then
@@ -1100,7 +1117,8 @@ var
         SetLength(TracedBombs, Length(TracedBombs) + 1);
         TracedBombs[Length(TracedBombs) - 1].Col := ACol;
         TracedBombs[Length(TracedBombs) - 1].Row := ARow;
-      end else begin
+      end else
+      begin
         SetLength(TracedItems, Length(TracedItems) + 1);
         TracedItems[Length(TracedItems) - 1].Col := ACol;
         TracedItems[Length(TracedItems) - 1].Row := ARow;
@@ -1706,36 +1724,41 @@ begin
     with FItems.FNextPairData, FItemImageLists do
     begin
       case Dir of
-        North: begin
-          Items[ID1].Draw(Canvas, R.Left + DefItemSize div 2, R.Top + DefItemSize,
-            DefImageIndexes[ID1], dsTransparent, itImage);
-          Items[ID2].Draw(Canvas, R.Left + DefItemSize div 2, R.Top,
-            DefImageIndexes[ID2], dsTransparent, itImage);
-        end;
-        East: begin
-          Items[ID1].Draw(Canvas, R.Left, R.Top + DefItemSize div 2,
-            DefImageIndexes[ID1], dsTransparent, itImage);
-          Items[ID2].Draw(Canvas, R.Left + DefItemSize, R.Top + DefItemSize div 2,
-            DefImageIndexes[ID2], dsTransparent, itImage);
-        end;
-        South: begin
-          Items[ID1].Draw(Canvas, R.Left + DefItemSize div 2, R.Top,
-            DefImageIndexes[ID1], dsTransparent, itImage);
-          Items[ID2].Draw(Canvas, R.Left + DefItemSize div 2, R.Top + DefItemSize,
-            DefImageIndexes[ID2], dsTransparent, itImage);
-        end;
-        West: begin
-          Items[ID1].Draw(Canvas, R.Left + DefItemSize, R.Top + DefItemSize div 2,
-            DefImageIndexes[ID1], dsTransparent, itImage);
-          Items[ID2].Draw(Canvas, R.Left, R.Top + DefItemSize div 2,
-            DefImageIndexes[ID2], dsTransparent, itImage);
-        end
+        North:
+          begin
+            Items[ID1].Draw(Canvas, R.Left + DefItemSize div 2, R.Top + DefItemSize,
+              DefImageIndexes[ID1], dsTransparent, itImage);
+            Items[ID2].Draw(Canvas, R.Left + DefItemSize div 2, R.Top,
+              DefImageIndexes[ID2], dsTransparent, itImage);
+          end;
+        East:
+          begin
+            Items[ID1].Draw(Canvas, R.Left, R.Top + DefItemSize div 2,
+              DefImageIndexes[ID1], dsTransparent, itImage);
+            Items[ID2].Draw(Canvas, R.Left + DefItemSize, R.Top + DefItemSize div 2,
+              DefImageIndexes[ID2], dsTransparent, itImage);
+          end;
+        South:
+          begin
+            Items[ID1].Draw(Canvas, R.Left + DefItemSize div 2, R.Top,
+              DefImageIndexes[ID1], dsTransparent, itImage);
+            Items[ID2].Draw(Canvas, R.Left + DefItemSize div 2, R.Top + DefItemSize,
+              DefImageIndexes[ID2], dsTransparent, itImage);
+          end;
+        West:
+          begin
+            Items[ID1].Draw(Canvas, R.Left + DefItemSize, R.Top + DefItemSize div 2,
+              DefImageIndexes[ID1], dsTransparent, itImage);
+            Items[ID2].Draw(Canvas, R.Left, R.Top + DefItemSize div 2,
+              DefImageIndexes[ID2], dsTransparent, itImage);
+          end
       end;
     end;
     R.Top := R.Bottom + 2 * Canvas.Font.Size;
     R.Right := Width - Defmargin;
     R.Bottom := R.Top + 2 * Canvas.Font.Size;
-  end else begin
+  end else
+  begin
     R.Top := DefMargin - 4;
     R.Right := Width - DefMargin;
     R.Bottom := R.Top + 2 * Canvas.Font.Size;
@@ -1856,7 +1879,8 @@ begin
     begin
       FItems.SetDelay(GetTickCount - FPauseTick);
       FPaused := False;
-    end else begin
+    end else
+    begin
       FItems.Clear;
       FScore := DefScore;
       FLevel := FStartLevel;
@@ -1896,10 +1920,14 @@ procedure TCustomQuadris.WMKeyDown(var Message: TWMKeyDown);
 begin
   if Running then
     case Message.CharCode of
-      VK_LEFT: DoMove(FItems.MoveLeft);
-      VK_UP: DoRotate(FItems.Rotate);
-      VK_RIGHT: DoMove(FItems.MoveRight);
-      VK_DOWN, VK_SPACE: FItems.Drop;
+      VK_LEFT:
+        DoMove(FItems.MoveLeft);
+      VK_UP:
+        DoRotate(FItems.Rotate);
+      VK_RIGHT:
+        DoMove(FItems.MoveRight);
+      VK_DOWN, VK_SPACE:
+        FItems.Drop;
     end;
   inherited;
 end;
