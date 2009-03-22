@@ -11,12 +11,14 @@
 {                                                                             }
 { *************************************************************************** }
 {                                                                             }
-{ Date: April 30, 2008                                                        }
-{ Version: 1.0.0.1                                                            }
+{ Date: March 22, 2009                                                        }
+{ Version: 1.0.0.2                                                            }
 {                                                                             }
 { *************************************************************************** }
 
 unit NLDQuadris;
+
+{$BOOLEVAL OFF}
 
 interface
 
@@ -56,11 +58,10 @@ type
 
   TGameOverEvent = procedure(Sender: TCustomQuadris;
     var StartAgain: Boolean) of object;
-  TPointsEvent = procedure(Sender: TCustomQuadris;
-    const Points, Multiplier: Word) of object;
+  TPointsEvent = procedure(Sender: TCustomQuadris; Points,
+    Multiplier: Word) of object;
   TQuadrisEvent = procedure(Sender: TCustomQuadris) of object;
-  TMoveEvent = procedure(Sender: TCustomQuadris;
-    const Succeeded: Boolean) of object;
+  TMoveEvent = procedure(Sender: TCustomQuadris; Succeeded: Boolean) of object;
 
   TQuadrisColors = record
     Light: TColor;
@@ -79,9 +80,9 @@ type
   TItemImageLists = class(TObjectList)
   private
     function GetItem(Index: TItemID): TCustomImageList;
-    procedure SetItem(Index: TItemID; const Value: TCustomImageList);
+    procedure SetItem(Index: TItemID; Value: TCustomImageList);
     function GetDefImageIndex(Index: Integer): Integer;
-    procedure SetDefImageIndex(Index: Integer; const Value: Integer);
+    procedure SetDefImageIndex(Index: Integer; Value: Integer);
   public
     property Items[Index: TItemID]: TCustomImageList read GetItem
       write SetItem; default;
@@ -111,13 +112,12 @@ type
     function GetCol: TColRange;
     function GetRow: TColHeight;
   protected
-    constructor CreateLinked(AQuadris: TCustomQuadris; const AID: TItemID);
+    constructor CreateLinked(AQuadris: TCustomQuadris; AID: TItemID);
     procedure Paint; override;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure MoveTo(const ACol: TColRange; const ARow: TColHeight;
-      const NewFinish: TRowRange);
-    procedure DropTo(const ARow: TRowRange);
+    procedure MoveTo(ACol: TColRange; ARow: TColHeight; NewFinish: TRowRange);
+    procedure DropTo(ARow: TRowRange);
     procedure Repaint; override;
     procedure Update; override;
     property Col: TColRange read GetCol;
@@ -146,9 +146,9 @@ type
 
   TItems = class(TObjectList)
   private
-    function GetItem(const Index: Integer): TItem;
+    function GetItem(Index: Integer): TItem;
   public
-    property Items[const Index: Integer]: TItem read GetItem; default;
+    property Items[Index: Integer]: TItem read GetItem; default;
   end;
 
   TQuadrisItems = class(TItems)
@@ -167,19 +167,18 @@ type
     FTraceCycle: Integer;
     procedure BeginDelete;
     procedure BeginDrop;
-    function ColHeight(const ACol: TColRange): TColHeight;
+    function ColHeight(ACol: TColRange): TColHeight;
     function DropSpeed: Double;
     procedure EndDelete;
     procedure EndDrop;
     function FallSpeed: Double;
-    procedure GridNeeded(const InclCurrentPair: Boolean);
-    procedure MoveCurrentPair(const ACol: TColRange; const ARow: TRowRange;
-      const ADir: TWind);
+    procedure GridNeeded(InclCurrentPair: Boolean);
+    procedure MoveCurrentPair(ACol: TColRange; ARow: TRowRange; ADir: TWind);
     function RandomNextPairData: TPairData;
     procedure Squeeze;
     procedure ThrowBombs;
     procedure Trace;
-    function ValidateMovement(const Direction: TWind): Boolean;
+    function ValidateMovement(Direction: TWind): Boolean;
   public
     procedure Clear; override;
     constructor Create(AQuadris: TCustomQuadris);
@@ -189,7 +188,7 @@ type
     function MoveLeft: Boolean;
     function MoveRight: Boolean;
     function Rotate: Boolean;
-    procedure SetDelay(const ADelay: Cardinal);
+    procedure SetDelay(ADelay: Cardinal);
     procedure ThrowNextPair;
     procedure Update;
   end;
@@ -223,9 +222,9 @@ type
   TFixedSizeControl = class(TCustomControl)
   private
     function GetAnchors: TAnchors;
-    procedure SetAnchors(const Value: TAnchors);
     function GetHeight: Integer;
     function GetWidth: Integer;
+    procedure SetAnchors(Value: TAnchors);
   protected
     function CanAutoSize(var NewWidth: Integer;
       var NewHeight: Integer): Boolean; override;
@@ -275,37 +274,36 @@ type
     procedure InitJoystick;
     function IsColorStored: Boolean;
     procedure PaintView;
-    procedure Points(const TracedCount, TraceCycle: Word);
-    procedure JoystickButtonDown(Sender: TNLDJoystick;
-      const Buttons: TJoyButtons);
+    procedure Points(TracedCount, TraceCycle: Word);
+    procedure JoystickButtonDown(Sender: TNLDJoystick; Buttons: TJoyButtons);
     procedure JoystickMove(Sender: TNLDJoystick; const JoyPos: TJoyRelPos;
-      const Buttons: TJoyButtons);
+      Buttons: TJoyButtons);
     procedure LoadTheme(const ATheme: TThemeName);
-    function MaxLevelScore(const ALevel: TQuadrisLevel): Cardinal;
+    function MaxLevelScore(ALevel: TQuadrisLevel): Cardinal;
     procedure OnAnimTimer(Sender: TObject);
     procedure OnUpdateTimer(Sender: TObject);
-    procedure SetColor(const Value: TColor);
-    procedure SetLevel(const Value: TQuadrisLevel);
-    procedure SetOptions(const Value: TQuadrisOptions);
-    procedure SetRunning(const Value: Boolean);
+    procedure SetColor(Value: TColor);
+    procedure SetLevel(Value: TQuadrisLevel);
+    procedure SetOptions(Value: TQuadrisOptions);
+    procedure SetRunning(Value: Boolean);
     procedure SetTheme(const Value: TThemeName);
     procedure UpdateLevel;
-    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
-    procedure CMVisibleChanged(var Message: TMessage); message CM_VISIBLECHANGED;
     procedure WMGetDlgCode(var Message: TMessage); message WM_GETDLGCODE;
     procedure WMKeyDown(var Message: TWMKeyDown); message WM_KEYDOWN;
     procedure WMKillFocus(var Message: TWMSetFocus); message WM_KILLFOCUS;
     procedure WMSetFocus(var Message: TWMSetFocus); message WM_SETFOCUS;
+    procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
+    procedure CMVisibleChanged(var Message: TMessage); message CM_VISIBLECHANGED;
   protected
-    procedure DoBonus(const Points, Multiplier: Word); virtual;
+    procedure DoBonus(Points, Multiplier: Word); virtual;
     procedure DoDrop; virtual;
     procedure DoGameOver(var StartAgain: Boolean); virtual;
     procedure DoLevel; virtual;
-    procedure DoMove(const Succeeded: Boolean); virtual;
-    procedure DoPoints(const Points, Multiplier: Word); virtual;
-    procedure DoRotate(const Succeeded: Boolean); virtual;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
-      X, Y: Integer); override;
+    procedure DoMove(Succeeded: Boolean); virtual;
+    procedure DoPoints(Points, Multiplier: Word); virtual;
+    procedure DoRotate(Succeeded: Boolean); virtual;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,
+      Y: Integer); override;
     procedure Paint; override;
     property Color: TColor read GetColor write SetColor stored IsColorStored;
     property Level: TQuadrisLevel read FLevel write SetLevel default DefLevel;
@@ -417,7 +415,7 @@ begin
   Result.B := GetBValue(AColor);
 end;
 
-function MixColor(const Base, MixWith: TColor; const Factor: Double): TColor;
+function MixColor(Base, MixWith: TColor; const Factor: Double): TColor;
 var
   FBase, FMixWith: TRGB;
 begin
@@ -459,14 +457,12 @@ begin
   Result := TCustomImageList(inherited Items[Index]);
 end;
 
-procedure TItemImageLists.SetDefImageIndex(Index: Integer;
-  const Value: Integer);
+procedure TItemImageLists.SetDefImageIndex(Index: Integer; Value: Integer);
 begin
   Items[Index].Tag := Value;
 end;
 
-procedure TItemImageLists.SetItem(Index: TItemID;
-  const Value: TCustomImageList);
+procedure TItemImageLists.SetItem(Index: TItemID; Value: TCustomImageList);
 begin
   inherited Items[Index] := Value;
 end;
@@ -480,12 +476,10 @@ procedure TItem.Animate;
 begin
   case FQuadris.FAnimKind of
     akCycle:
-      begin
-        if FAnimIndex = FImages.Count - 1 then
-          FAnimIndex := 0
-        else
-          Inc(FAnimIndex);
-      end;
+      if FAnimIndex = FImages.Count - 1 then
+        FAnimIndex := 0
+      else
+        Inc(FAnimIndex);
     akPendulum:
       begin
         if FAnimIndex = FImages.Count - 1 then
@@ -507,7 +501,7 @@ begin
   raise EQuadrisError.CreateFmt(rsErrInvalidCreationF, [ClassName]);
 end;
 
-constructor TItem.CreateLinked(AQuadris: TCustomQuadris; const AID: TItemID);
+constructor TItem.CreateLinked(AQuadris: TCustomQuadris; AID: TItemID);
 begin
   inherited Create(nil);
   ControlStyle := [csOpaque, csFixedWidth, csFixedHeight, csDisplayDragImage,
@@ -528,7 +522,7 @@ begin
   Parent := FQuadris.FView;
 end;
 
-procedure TItem.DropTo(const ARow: TRowRange);
+procedure TItem.DropTo(ARow: TRowRange);
 begin
   FDropping := True;
   FMotion.Speed := FItems.DropSpeed;
@@ -570,8 +564,7 @@ begin
   Result := RowCount - 1 - Ceil(Top / Height);
 end;
 
-procedure TItem.MoveTo(const ACol: TColRange; const ARow: TColHeight;
-  const NewFinish: TRowRange);
+procedure TItem.MoveTo(ACol: TColRange; ARow: TColHeight; NewFinish: TRowRange);
 begin
   FCol := ACol;
   FRow := ARow;
@@ -605,7 +598,8 @@ begin
     BitBlt(Canvas.Handle, 0, 0, Width, Height, DC2, 0, 0, SRCPAINT);
     DeleteObject(BITMAP2);
     DeleteDC(DC2);
-  end else
+  end
+  else
   begin
     ImageList_Draw(FImages.Handle, FAnimIndex, DC1, 0, 0, ILD_MASK);
     BitBlt(DC1, 0, 0, Width, Height, FBackground.Handle, Left, Top, SRCAND);
@@ -661,7 +655,7 @@ end;
 
 { TItems }
 
-function TItems.GetItem(const Index: Integer): TItem;
+function TItems.GetItem(Index: Integer): TItem;
 begin
   Result := TItem(inherited Items[Index]);
 end;
@@ -751,7 +745,7 @@ begin
   FTraceCycle := 0;
 end;
 
-function TQuadrisItems.ColHeight(const ACol: TColRange): TColHeight;
+function TQuadrisItems.ColHeight(ACol: TColRange): TColHeight;
 begin
   for Result := BottomRow to TopRow do
     if FGrid[ACol, Result] = nil then
@@ -844,7 +838,7 @@ begin
     (DefMaxFallSpeed - DefMinFallSpeed);
 end;
 
-procedure TQuadrisItems.GridNeeded(const InclCurrentPair: Boolean);
+procedure TQuadrisItems.GridNeeded(InclCurrentPair: Boolean);
 const
   Subtract: array[Boolean] of Integer = (3, 1);
 var
@@ -871,8 +865,8 @@ begin
   end;
 end;
 
-procedure TQuadrisItems.MoveCurrentPair(const ACol: TColRange;
-  const ARow: TRowRange; const ADir: TWind);
+procedure TQuadrisItems.MoveCurrentPair(ACol: TColRange; ARow: TRowRange;
+  ADir: TWind);
 begin
   FCurrentPair.Dir := ADir;
   case ADir of
@@ -962,7 +956,8 @@ begin
         begin
           IncDir;
           Dec(Col);
-        end else
+        end
+        else
         begin
           IncDir;
           IncDir;
@@ -980,7 +975,8 @@ begin
         begin
           IncDir;
           Inc(Col);
-        end else
+        end
+        else
         begin
           IncDir;
           IncDir;
@@ -994,7 +990,7 @@ begin
   end;
 end;
 
-procedure TQuadrisItems.SetDelay(const ADelay: Cardinal);
+procedure TQuadrisItems.SetDelay(ADelay: Cardinal);
 var
   i: Integer;
 begin
@@ -1082,7 +1078,8 @@ begin
         MoveCurrentPair(Col, Row, Dir);
         FNextPairData := RandomNextPairData;
         FQuadris.PaintView;
-      end else
+      end
+      else
         FQuadris.GameOver;
     end;
 end;
@@ -1100,14 +1097,10 @@ var
     FillChar(Checked, SizeOf(Checked), 0);
   end;
 
-  procedure TraceQuadris(const ACol: TColRange; const ARow: TRowRange;
-    const TraceID: TItemID);
+  procedure TraceQuadris(ACol: TColRange; ARow: TRowRange; TraceID: TItemID);
   var
     IsBomb: Boolean;
   begin
-    {$IFOPT B+}
-      {$BOOLEVAL OFF}
-    {$ENDIF}
     Checked[ACol, ARow] := True;
     IsBomb := FGrid[ACol, ARow].ID = FBombItemID;
     if (FGrid[ACol, ARow].ID = TraceID) or IsBomb then
@@ -1117,7 +1110,8 @@ var
         SetLength(TracedBombs, Length(TracedBombs) + 1);
         TracedBombs[Length(TracedBombs) - 1].Col := ACol;
         TracedBombs[Length(TracedBombs) - 1].Row := ARow;
-      end else
+      end
+      else
       begin
         SetLength(TracedItems, Length(TracedItems) + 1);
         TracedItems[Length(TracedItems) - 1].Col := ACol;
@@ -1197,7 +1191,7 @@ begin
     Drop;
 end;
 
-function TQuadrisItems.ValidateMovement(const Direction: TWind): Boolean;
+function TQuadrisItems.ValidateMovement(Direction: TWind): Boolean;
 var
   Col: TColRange;
   Row: TRowRange;
@@ -1365,24 +1359,21 @@ begin
   Result := inherited Width;
 end;
 
-procedure TFixedSizeControl.SetAnchors(const Value: TAnchors);
-var
-  NewValue: TAnchors;
+procedure TFixedSizeControl.SetAnchors(Value: TAnchors);
 begin
   if Value <> Anchors then
   begin
-    NewValue := Value;
-    if [akLeft, akRight] * NewValue = [akLeft, akRight] then
+    if [akLeft, akRight] * Value = [akLeft, akRight] then
       if akLeft in Anchors then
-        Exclude(NewValue, akLeft)
+        Exclude(Value, akLeft)
       else
-        Exclude(NewValue, akRight);
-    if [akTop, akBottom] * NewValue = [akTop, akBottom] then
+        Exclude(Value, akRight);
+    if [akTop, akBottom] * Value = [akTop, akBottom] then
       if akTop in Anchors then
-        Exclude(NewValue, akTop)
+        Exclude(Value, akTop)
       else
-        Exclude(NewValue, akBottom);
-    inherited Anchors := NewValue;
+        Exclude(Value, akBottom);
+    inherited Anchors := Value;
   end;
 end;
 
@@ -1467,7 +1458,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TCustomQuadris.DoBonus(const Points, Multiplier: Word);
+procedure TCustomQuadris.DoBonus(Points, Multiplier: Word);
 begin
   if Assigned(FOnBonus) then
     FOnBonus(Self, Points, Multiplier);
@@ -1491,19 +1482,19 @@ begin
     FOnLevel(Self);
 end;
 
-procedure TCustomQuadris.DoMove(const Succeeded: Boolean);
+procedure TCustomQuadris.DoMove(Succeeded: Boolean);
 begin
   if Assigned(FOnMove) then
     FOnMove(Self, Succeeded);
 end;
 
-procedure TCustomQuadris.DoPoints(const Points, Multiplier: Word);
+procedure TCustomQuadris.DoPoints(Points, Multiplier: Word);
 begin
   if Assigned(FOnPoints) then
     FOnPoints(Self, Points, Multiplier);
 end;
 
-procedure TCustomQuadris.DoRotate(const Succeeded: Boolean);
+procedure TCustomQuadris.DoRotate(Succeeded: Boolean);
 begin
   if Assigned(FOnRotate) then
     FOnRotate(Self, Succeeded);
@@ -1572,7 +1563,7 @@ begin
 end;
 
 procedure TCustomQuadris.JoystickButtonDown(Sender: TNLDJoystick;
-  const Buttons: TJoyButtons);
+  Buttons: TJoyButtons);
 begin
   if JoyBtn1 in Buttons then
     PostMessage(Handle, WM_KEYDOWN, VK_DOWN, 0);
@@ -1580,7 +1571,7 @@ begin
 end;
 
 procedure TCustomQuadris.JoystickMove(Sender: TNLDJoystick;
-  const JoyPos: TJoyRelPos; const Buttons: TJoyButtons);
+  const JoyPos: TJoyRelPos; Buttons: TJoyButtons);
 begin
   if JoyPos.X < 0 then
     PostMessage(Handle, WM_KEYDOWN, VK_LEFT, 0)
@@ -1654,13 +1645,14 @@ begin
       Stream.Free;
     end;
   except
-    on EOutOfMemory do raise;
-  else
-    raise EQuadrisError.CreateFmt(rsErrResCorruptF, [ATheme]);
+    on EOutOfMemory do
+      raise;
+    else
+      raise EQuadrisError.CreateFmt(rsErrResCorruptF, [ATheme]);
   end;
 end;
 
-function TCustomQuadris.MaxLevelScore(const ALevel: TQuadrisLevel): Cardinal;
+function TCustomQuadris.MaxLevelScore(ALevel: TQuadrisLevel): Cardinal;
 begin
   Result := (ALevel + 1) * 50 * ALevel;
 end;
@@ -1787,7 +1779,7 @@ begin
   end;
 end;
 
-procedure TCustomQuadris.Points(const TracedCount, TraceCycle: Word);
+procedure TCustomQuadris.Points(TracedCount, TraceCycle: Word);
 begin
   Inc(FScore, FLevel * TracedCount * TraceCycle);
   PaintView;
@@ -1805,7 +1797,7 @@ begin
   UpdateLevel;
 end;
 
-procedure TCustomQuadris.SetColor(const Value: TColor);
+procedure TCustomQuadris.SetColor(Value: TColor);
 begin
   if Color <> Value then
   begin
@@ -1821,7 +1813,7 @@ begin
   end;
 end;
 
-procedure TCustomQuadris.SetLevel(const Value: TQuadrisLevel);
+procedure TCustomQuadris.SetLevel(Value: TQuadrisLevel);
 begin
   if FLevel <> Value then
   begin
@@ -1832,7 +1824,7 @@ begin
   end;
 end;
 
-procedure TCustomQuadris.SetOptions(const Value: TQuadrisOptions);
+procedure TCustomQuadris.SetOptions(Value: TQuadrisOptions);
 begin
   if FOptions <> Value then
   begin
@@ -1847,7 +1839,7 @@ begin
   end;
 end;
 
-procedure TCustomQuadris.SetRunning(const Value: Boolean);
+procedure TCustomQuadris.SetRunning(Value: Boolean);
 begin
   if csDesigning in ComponentState then
     FStreamedRunning := Value
