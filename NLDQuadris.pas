@@ -1187,8 +1187,9 @@ begin
     Items[i].Update;
     Inc(i);
   end;
-  if FCurrentPair.Item1.FAutoFinished or FCurrentPair.Item2.FAutoFinished then
-    Drop;
+  if Count > 1 then
+    if FCurrentPair.Item1.FAutoFinished or FCurrentPair.Item2.FAutoFinished then
+      Drop;
 end;
 
 function TQuadrisItems.ValidateMovement(Direction: TWind): Boolean;
